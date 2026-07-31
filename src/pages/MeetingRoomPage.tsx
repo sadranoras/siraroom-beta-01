@@ -39,22 +39,16 @@ export default function MeetingRoomPage({ roomId, roomCode, participantId, onLea
 
   // 🟢 ارسال همزمان استریم وب‌کم و اسکرین به WebRTC
   const currentUserId = me?.id || '';
-  const { remoteStreams, connectToUser } = useWebRTC(
-  currentUserId,
-  media.camStream,
-  media.micStream,
-  media.screenStream
-);
+  const { remoteStreams, connectToUser } = useWebRTC(currentUserId, media.camStream, media.screenStream);
 
   useEffect(() => {
-  if (!currentUserId || participants.length === 0) return;
-
-  participants.forEach(p => {
-    if (p.id !== currentUserId) {
-      connectToUser(p.id);
-    }
-  });
-}, [participants, currentUserId, connectToUser]);
+    if (!currentUserId || participants.length === 0) return;
+    participants.forEach(p => {
+      if (p.id !== currentUserId) {
+        connectToUser(p.id);
+      }
+    });
+  }, [participants, currentUserId]);
 
   const channelRef = useRef<ReturnType<typeof supabase.channel> | null>(null);
   const broadcastChannelRef = useRef<ReturnType<typeof supabase.channel> | null>(null);
