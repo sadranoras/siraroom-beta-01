@@ -21,7 +21,10 @@ export function useMedia() {
       forceMicOff();
     } else {
       try {
-        const stream = await navigator.mediaDevices.getUserMedia({ audio: true, video: false });
+        const stream = await navigator.mediaDevices.getUserMedia({
+  video: true,
+  audio: true
+});
         setMicStream(stream);
         setMicOn(true);
       } catch (err) {
