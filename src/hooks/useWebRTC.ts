@@ -33,6 +33,16 @@ if (micStream) {
   });
 }
 
+        console.log(
+  "SEND VIDEO:",
+  outgoingStream.getVideoTracks()
+);
+
+console.log(
+  "SEND AUDIO:",
+  outgoingStream.getAudioTracks()
+);
+
 call.answer(answerStream);
         call.on('stream', (remoteStream: MediaStream) => {
           setRemoteStreams(prev => ({ ...prev, [call.peer]: remoteStream }));
