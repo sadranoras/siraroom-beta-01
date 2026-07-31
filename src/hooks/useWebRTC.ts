@@ -31,9 +31,8 @@ if (micStream) {
   micStream.getTracks().forEach(track => {
     answerStream.addTrack(track);
   });
-}
 
-        console.log(
+          console.log(
   "SEND VIDEO:",
   outgoingStream.getVideoTracks()
 );
@@ -42,6 +41,9 @@ console.log(
   "SEND AUDIO:",
   outgoingStream.getAudioTracks()
 );
+}
+
+
 
 call.answer(answerStream);
         call.on('stream', (remoteStream: MediaStream) => {
