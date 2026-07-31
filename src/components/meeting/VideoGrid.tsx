@@ -45,12 +45,12 @@ export default function VideoGrid({
         <div className="relative w-full flex-1 bg-black rounded-2xl overflow-hidden border-2 border-blue-500/40 shadow-2xl flex items-center justify-center min-h-0">
           {isMeSharing ? (
             <video
-              ref={localScreenVideoRef}
-              autoPlay
-              playsInline
-              muted
-              className="w-full h-full object-contain aspect-video"
-            />
+  ref={videoRef}
+  autoPlay
+  playsInline
+  controls={false}
+  className="w-full h-full object-cover"
+/>
           ) : (
             <RemoteScreenVideo
               stream={remoteStreams[`${presenter?.id}-screen`] || remoteStreams[presenter?.id || '']}
