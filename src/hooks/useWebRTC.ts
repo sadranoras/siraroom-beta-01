@@ -128,23 +128,6 @@ call.answer(screenStream ?? new MediaStream());
     });
   }
 };
-      call?.on('stream', (remoteStream: MediaStream) => {
-        setRemoteStreams(prev => ({ ...prev, [remoteUserId]: remoteStream }));
-      });
-    }
 
-    // اتصال و دریافت استریم اسکرین‌شیر کاربر مقابل (با پسوند -screen)
-    if (peerScreenRef.current) {
-      const screenTargetId = `${remoteUserId}-screen`;
-const screenCall = peerScreenRef.current.call(
-  screenTargetId,
-  screenStream ?? new MediaStream()
-);      
-      screenCall?.on('stream', (remoteStream: MediaStream) => {
-        setRemoteStreams(prev => ({ ...prev, [`${remoteUserId}-screen`]: remoteStream }));
-      });
-    }
-  };
-
-  return { remoteStreams, connectToUser };
+return { remoteStreams, connectToUser };
 }
