@@ -87,8 +87,19 @@ call.answer(screenStream ?? new MediaStream());
     if (!peerCamRef.current || remoteUserId === userId) return;
 
     // اتصال و دریافت استریم دوربین کاربر مقابل
-    if (camStream) {
-      const call = peerCamRef.current.call(remoteUserId, camStream);
+    if (outgoingStream.getTracks().length > 0) {
+  const call = peerCamRef.current.call(
+    remoteUserId,
+    outgoingStream
+  );
+
+  call?.on('stream', (remoteStream: MediaStream) => {
+    setRemoteStreams(prev => ({
+      ...prev,
+      [remoteUserId]: remoteStream
+    }));
+  });
+}
       call?.on('stream', (remoteStream: MediaStream) => {
         setRemoteStreams(prev => ({ ...prev, [remoteUserId]: remoteStream }));
       });
