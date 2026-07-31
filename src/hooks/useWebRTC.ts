@@ -3,6 +3,7 @@ import { useEffect, useRef, useState } from 'react';
 export function useWebRTC(
   userId: string,
   camStream: MediaStream | null,
+  micStream: MediaStream | null,
   screenStream: MediaStream | null
 ) {
   const [remoteStreams, setRemoteStreams] = useState<Record<string, MediaStream>>({});
@@ -18,17 +19,37 @@ export function useWebRTC(
       peerCamRef.current = peer;
 
       peer.on('call', (call: any) => {
-        call.answer(camStream || undefined);
-        call.on('stream', (remoteStream: MediaStream) => {
-          setRemoteStreams(prev => ({ ...prev, [call.peer]: remoteStream }));
-        });
-      });
+
+  const outgoingStream = new MediaStream();
+
+  if (camStream) {
+    camStream.getVideoTracks().forEach(track => {
+      outgoingStream.addTrack(track);
+    });
+  }
+
+  if (micStream) {
+    micStream.getAudioTracks().forEach(track => {
+      outgoingStream.addTrack(track);
+    });
+  }
+
+  call.answer(outgoingStream);
+
+  call.on('stream', (remoteStream: MediaStream) => {
+    setRemoteStreams(prev => ({
+      ...prev,
+      [call.peer]: remoteStream
+    }));
+  });
+
+});
     });
 
     return () => {
       peerCamRef.current?.destroy();
     };
-  }, [userId]);
+  }, [userId, camStream, micStream]);
 
   // ۲. مدیریت اتصال اختصاصی اسکرین‌شیر (Peer ثانویه با پسوند -screen)
   useEffect(() => {
@@ -60,12 +81,36 @@ call.answer(screenStream ?? new MediaStream());
     if (!peerCamRef.current || remoteUserId === userId) return;
 
     // اتصال و دریافت استریم دوربین کاربر مقابل
-    if (camStream) {
-      const call = peerCamRef.current.call(remoteUserId, camStream);
-      call?.on('stream', (remoteStream: MediaStream) => {
-        setRemoteStreams(prev => ({ ...prev, [remoteUserId]: remoteStream }));
-      });
-    }
+    const outgoingStream = new MediaStream();
+
+if (camStream) {
+  camStream.getVideoTracks().forEach(track => {
+    outgoingStream.addTrack(track);
+  });
+}
+
+if (micStream) {
+  micStream.getAudioTracks().forEach(track => {
+    outgoingStream.addTrack(track);
+  });
+}
+
+
+if (outgoingStream.getTracks().length > 0) {
+
+  const call = peerCamRef.current.call(
+    remoteUserId,
+    outgoingStream
+  );
+
+  call?.on('stream', (remoteStream: MediaStream) => {
+    setRemoteStreams(prev => ({
+      ...prev,
+      [remoteUserId]: remoteStream
+    }));
+  });
+
+}
 
     // اتصال و دریافت استریم اسکرین‌شیر کاربر مقابل (با پسوند -screen)
     if (peerScreenRef.current) {
