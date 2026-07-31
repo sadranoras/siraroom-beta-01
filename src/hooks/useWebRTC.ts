@@ -31,19 +31,17 @@ if (micStream) {
   micStream.getTracks().forEach(track => {
     answerStream.addTrack(track);
   });
+}
 
-          console.log(
+console.log(
   "SEND VIDEO:",
-  outgoingStream.getVideoTracks()
+  answerStream.getVideoTracks()
 );
 
 console.log(
   "SEND AUDIO:",
-  outgoingStream.getAudioTracks()
+  answerStream.getAudioTracks()
 );
-}
-
-
 
 call.answer(answerStream);
         call.on('stream', (remoteStream: MediaStream) => {
@@ -84,22 +82,52 @@ call.answer(screenStream ?? new MediaStream());
 
   // ۳. متد برقراری ارتباط با سایر کاربران حاضر در اتاق
   const connectToUser = (remoteUserId: string) => {
-    if (!peerCamRef.current || remoteUserId === userId) return;
+  if (!peerCamRef.current || remoteUserId === userId) return;
 
-    // اتصال و دریافت استریم دوربین کاربر مقابل
-    if (outgoingStream.getTracks().length > 0) {
-  const call = peerCamRef.current.call(
-    remoteUserId,
-    outgoingStream
-  );
+  const outgoingStream = new MediaStream();
 
-  call?.on('stream', (remoteStream: MediaStream) => {
-    setRemoteStreams(prev => ({
-      ...prev,
-      [remoteUserId]: remoteStream
-    }));
-  });
-}
+  if (camStream) {
+    camStream.getTracks().forEach(track => {
+      outgoingStream.addTrack(track);
+    });
+  }
+
+  if (micStream) {
+    micStream.getTracks().forEach(track => {
+      outgoingStream.addTrack(track);
+    });
+  }
+
+  if (outgoingStream.getTracks().length > 0) {
+    const call = peerCamRef.current.call(
+      remoteUserId,
+      outgoingStream
+    );
+
+    call?.on('stream', (remoteStream: MediaStream) => {
+      setRemoteStreams(prev => ({
+        ...prev,
+        [remoteUserId]: remoteStream
+      }));
+    });
+  }
+
+  if (peerScreenRef.current) {
+    const screenTargetId = `${remoteUserId}-screen`;
+
+    const screenCall = peerScreenRef.current.call(
+      screenTargetId,
+      screenStream ?? new MediaStream()
+    );
+
+    screenCall?.on('stream', (remoteStream: MediaStream) => {
+      setRemoteStreams(prev => ({
+        ...prev,
+        [`${remoteUserId}-screen`]: remoteStream
+      }));
+    });
+  }
+};
       call?.on('stream', (remoteStream: MediaStream) => {
         setRemoteStreams(prev => ({ ...prev, [remoteUserId]: remoteStream }));
       });
