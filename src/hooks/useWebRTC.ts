@@ -3,6 +3,7 @@ import { useEffect, useRef, useState } from 'react';
 export function useWebRTC(
   userId: string,
   camStream: MediaStream | null,
+  micStream: MediaStream | null,
   screenStream: MediaStream | null
 ) {
   const [remoteStreams, setRemoteStreams] = useState<Record<string, MediaStream>>({});
