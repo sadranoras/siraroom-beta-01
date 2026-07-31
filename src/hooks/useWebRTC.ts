@@ -20,29 +20,30 @@ export function useWebRTC(
 
       peer.on('call', (call: any) => {
 
-  const outgoingStream = new MediaStream();
+  const answerStream = new MediaStream();
 
   if (camStream) {
-    camStream.getVideoTracks().forEach(track => {
-      outgoingStream.addTrack(track);
+    camStream.getTracks().forEach(track => {
+      answerStream.addTrack(track);
     });
   }
 
   if (micStream) {
-    micStream.getAudioTracks().forEach(track => {
-      outgoingStream.addTrack(track);
+    micStream.getTracks().forEach(track => {
+      answerStream.addTrack(track);
     });
   }
 
-  call.answer(outgoingStream);
+  call.answer(answerStream);
 
   call.on('stream', (remoteStream: MediaStream) => {
+    console.log("REMOTE STREAM", remoteStream.getTracks());
+
     setRemoteStreams(prev => ({
       ...prev,
       [call.peer]: remoteStream
     }));
   });
-
 });
     });
 
