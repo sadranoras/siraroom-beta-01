@@ -176,7 +176,7 @@ export default function MeetingRoomPage({ roomId, roomCode, participantId, onLea
         fetchParticipants();
       });
 
-    channel.subscribe((status, err) => {
+    channel.subscribe((err) => {
       if (err) console.error('Realtime subscription error:', err);
     });
 
