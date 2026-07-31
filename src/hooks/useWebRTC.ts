@@ -18,7 +18,21 @@ export function useWebRTC(
       peerCamRef.current = peer;
 
       peer.on('call', (call: any) => {
-        call.answer(camStream || undefined);
+        const answerStream = new MediaStream();
+
+if (camStream) {
+  camStream.getTracks().forEach(track => {
+    answerStream.addTrack(track);
+  });
+}
+
+if (micStream) {
+  micStream.getTracks().forEach(track => {
+    answerStream.addTrack(track);
+  });
+}
+
+call.answer(answerStream);
         call.on('stream', (remoteStream: MediaStream) => {
           setRemoteStreams(prev => ({ ...prev, [call.peer]: remoteStream }));
         });
