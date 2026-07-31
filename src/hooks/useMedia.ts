@@ -11,6 +11,7 @@ export function useMedia() {
   const [screenStream, setScreenStream] = useState<MediaStream | null>(null);
 
   const camVideoRef = useRef<HTMLVideoElement | null>(null);
+  const screenVideoRef = useRef<HTMLVideoElement | null>(null);
   const mediaRecorderRef = useRef<MediaRecorder | null>(null);
   const recordedChunksRef = useRef<Blob[]>([]);
 
@@ -79,11 +80,6 @@ export function useMedia() {
 
   const startScreenShare = async () => {
   try {
-    // اگر قبلاً استریمی وجود داشت، آن را متوقف کن.
-    if (screenStream) {
-      screenStream.getTracks().forEach((track) => track.stop());
-    }
-
     const stream = await navigator.mediaDevices.getDisplayMedia({
       video: true,
       audio: true,
@@ -91,6 +87,10 @@ export function useMedia() {
 
     setScreenStream(stream);
     setScreenOn(true);
+
+    if (screenVideoRef.current) {
+      screenVideoRef.current.srcObject = stream;
+    }
 
     const videoTrack = stream.getVideoTracks()[0];
 
@@ -184,5 +184,6 @@ const stopScreenShare = () => {
     forceScreenOff,
     startRecording,
     stopRecording,
+    screenVideoRef,
   };
 }
