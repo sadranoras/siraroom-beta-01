@@ -48,7 +48,6 @@ export default function VideoGrid({
   ref={videoRef}
   autoPlay
   playsInline
-  controls={false}
   className="w-full h-full object-cover"
 />
           ) : (
